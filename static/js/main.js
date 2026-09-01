@@ -12,7 +12,7 @@ const translations = {
         sign_in: "Sign In",
         get_started: "Get Started",
         my_dashboard: "My Dashboard →",
-        tagline: "Flagship Intelligent Platform for Civic & Agricultural Action",
+        tagline: "Unified Platform for Civic and Agricultural Action",
         description: "Connecting Citizens, Farmers, Experts, NGOs, Volunteers, and Authorities through real-time AI disease diagnostics, GIS issue triage, live market intelligence, and coordinated field action.",
         citizen_portal: "Citizen Portal",
         farmer_portal: "Farmer Portal",
