@@ -9,12 +9,28 @@ from config import config
 from app.extensions import db, login_manager, csrf
 
 
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
+TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
+STATIC_DIR = os.path.join(BASE_DIR, 'static')
+
+
 def create_app(config_name=None):
-    """Create and configure the Flask application."""
+    """Create and configure the Flask application.
+
+    Templates and static assets live at the repository root, while this
+    application factory lives under ``app/``. Flask otherwise searches under
+    ``app/templates`` and ``app/static`` when initialized with ``Flask(__name__)``.
+    Explicit paths keep local and Vercel deployments consistent.
+    """
     if config_name is None:
         config_name = os.environ.get('FLASK_ENV', 'default')
 
-    app = Flask(__name__)
+    app = Flask(
+        __name__,
+        template_folder=TEMPLATE_DIR,
+        static_folder=STATIC_DIR,
+        static_url_path='/static',
+    )
     app.config.from_object(config.get(config_name, config['default']))
 
     db.init_app(app)
