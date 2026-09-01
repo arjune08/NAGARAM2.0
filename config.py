@@ -10,6 +10,31 @@ load_dotenv()
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 
+def _database_url_from_env(default=None):
+    """Return a usable DATABASE_URL, ignoring common placeholder values.
+
+    This prevents a copied Supabase example such as
+    ``db.YOUR_PROJECT.supabase.co`` from crashing the Vercel function during
+    application startup. A real production deployment should set DATABASE_URL
+    to the connection string for the NAGARAM Supabase project.
+    """
+    value = (os.environ.get("DATABASE_URL") or "").strip()
+    if not value:
+        return default
+
+    placeholder_markers = (
+        "YOUR_PROJECT",
+        "your-project",
+        "PROJECT_REF",
+        "YOUR_PASSWORD",
+        "YOUR_DB_PASSWORD",
+    )
+    if any(marker in value for marker in placeholder_markers):
+        return default
+
+    return value
+
+
 class Config:
     """Base configuration."""
     SECRET_KEY = os.environ.get('SECRET_KEY', 'nagaram-dev-secret-change-in-production')
@@ -27,8 +52,7 @@ class Config:
 class DevelopmentConfig(Config):
     """Development configuration — uses SQLite by default."""
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get(
-        'DATABASE_URL',
+    SQLALCHEMY_DATABASE_URI = _database_url_from_env(
         f'sqlite:///{os.path.join(BASE_DIR, "nagaram_dev.db")}'
     )
 
@@ -36,13 +60,14 @@ class DevelopmentConfig(Config):
 class ProductionConfig(Config):
     """Production configuration.
 
-    Set DATABASE_URL to a persistent PostgreSQL database (for example Supabase).
-    The /tmp fallback only keeps the Vercel function bootable when no database
-    variable has been configured; Vercel /tmp storage is not persistent.
+    A valid DATABASE_URL should point to the persistent Supabase PostgreSQL
+    database. If the environment still contains an example/placeholder URL,
+    fall back to an ephemeral SQLite database so Vercel can boot instead of
+    returning an import/startup 500. The SQLite fallback is deliberately only
+    a resilience fallback; it is not a replacement for production storage.
     """
     DEBUG = False
-    SQLALCHEMY_DATABASE_URI = os.environ.get(
-        'DATABASE_URL',
+    SQLALCHEMY_DATABASE_URI = _database_url_from_env(
         'sqlite:////tmp/nagaram_vercel.db'
     )
     SESSION_COOKIE_SECURE = True
