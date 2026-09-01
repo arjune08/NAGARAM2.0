@@ -14,8 +14,9 @@ class Config:
     """Base configuration."""
     SECRET_KEY = os.environ.get('SECRET_KEY', 'nagaram-dev-secret-change-in-production')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16 MB max upload
-    UPLOAD_FOLDER = os.path.join(BASE_DIR, 'app', 'static', 'uploads')
+    MAX_CONTENT_LENGTH = 16 * 1024 * 1024
+    # Vercel's deployed filesystem is read-only; /tmp is writable but ephemeral.
+    UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER', '/tmp/nagaram_uploads')
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp', 'pdf'}
     WTF_CSRF_ENABLED = True
     SESSION_COOKIE_HTTPONLY = True
@@ -33,7 +34,7 @@ class DevelopmentConfig(Config):
 
 
 class ProductionConfig(Config):
-    """Production configuration — requires Supabase PostgreSQL."""
+    """Production configuration — uses the DATABASE_URL environment variable."""
     DEBUG = False
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
     SESSION_COOKIE_SECURE = True
@@ -41,9 +42,8 @@ class ProductionConfig(Config):
 
     @classmethod
     def init_app(cls, app):
-        # Fix Supabase/Heroku postgres:// → postgresql:// URI scheme
-        uri = app.config.get('SQLALCHEMY_DATABASE_URI', '')
-        if uri and uri.startswith('postgres://'):
+        uri = app.config.get('SQLALCHEMY_DATABASE_URI', '') or ''
+        if uri.startswith('postgres://'):
             app.config['SQLALCHEMY_DATABASE_URI'] = uri.replace(
                 'postgres://', 'postgresql://', 1
             )
