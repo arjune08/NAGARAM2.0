@@ -34,9 +34,17 @@ class DevelopmentConfig(Config):
 
 
 class ProductionConfig(Config):
-    """Production configuration — uses the DATABASE_URL environment variable."""
+    """Production configuration.
+
+    Set DATABASE_URL to a persistent PostgreSQL database (for example Supabase).
+    The /tmp fallback only keeps the Vercel function bootable when no database
+    variable has been configured; Vercel /tmp storage is not persistent.
+    """
     DEBUG = False
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
+    SQLALCHEMY_DATABASE_URI = os.environ.get(
+        'DATABASE_URL',
+        'sqlite:////tmp/nagaram_vercel.db'
+    )
     SESSION_COOKIE_SECURE = True
     WTF_CSRF_TIME_LIMIT = 3600
 
