@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block title %}Create Account{% endblock %}
+{% block navbar %}
+<div class="tricolor-bar" style="height:4px;background:linear-gradient(to right,#FF9933 33%,#fff 33%,#fff 66%,#138808 66%);"></div>
+<nav class="navbar"><a href="/" class="navbar-brand"><img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="brand-logo"><span class="brand-badge">NAGARAM</span></a>
+<ul class="navbar-nav"><li><a href="/">Home</a></li><li><a href="{{ url_for('auth.login') }}">Login</a></li></ul></nav>
+{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+    <div class="auth-container">
+        <div class="auth-card" style="max-width:560px;">
+            <div class="auth-header">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="NAGARAM Logo" style="max-width:110px;height:auto;margin-bottom:0.75rem;filter:drop-shadow(0 0 15px rgba(245,158,11,0.5));">
+                <div class="brand">NAGA<span>RAM</span></div>
+                <h2>Create Account</h2>
+                <p>Join the NAGARAM platform</p>
+            </div>
+
+            <form method="POST" action="{{ url_for('auth.register') }}">
+                {{ form.hidden_tag() }}
+
+                <div class="form-group">
+                    <label for="full_name">Full Name</label>
+                    <input type="text" id="full_name" name="full_name" class="form-control"
+                           value="{{ form.full_name.data or '' }}" required>
+                    {% for error in form.full_name.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" class="form-control"
+                               value="{{ form.username.data or '' }}" required>
+                        {% for error in form.username.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" class="form-control"
+                               value="{{ form.email.data or '' }}" required>
+                        {% for error in form.email.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Register As</label>
+                    <div class="role-select-grid">
+                        <div class="role-option">
+                            <input type="radio" name="role" id="role_citizen" value="citizen" {{ 'checked' if form.role.data == 'citizen' or not form.role.data }}>
+                            <label for="role_citizen"><span class="role-emoji">👤</span> Citizen</label>
+                        </div>
+                        <div class="role-option">
+                            <input type="radio" name="role" id="role_farmer" value="farmer" {{ 'checked' if form.role.data == 'farmer' }}>
+                            <label for="role_farmer"><span class="role-emoji">🧑‍🌾</span> Farmer</label>
+                        </div>
+                        <div class="role-option">
+                            <input type="radio" name="role" id="role_expert" value="expert" {{ 'checked' if form.role.data == 'expert' }}>
+                            <label for="role_expert"><span class="role-emoji">🔬</span> Expert</label>
+                        </div>
+                        <div class="role-option">
+                            <input type="radio" name="role" id="role_ngo" value="ngo" {{ 'checked' if form.role.data == 'ngo' }}>
+                            <label for="role_ngo"><span class="role-emoji">🏢</span> NGO</label>
+                        </div>
+                        <div class="role-option">
+                            <input type="radio" name="role" id="role_volunteer" value="volunteer" {{ 'checked' if form.role.data == 'volunteer' }}>
+                            <label for="role_volunteer"><span class="role-emoji">🤝</span> Volunteer</label>
+                        </div>
+                    </div>
+                    {% for error in form.role.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" class="form-control"
+                               value="{{ form.phone.data or '' }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="location">Location / City</label>
+                        <input type="text" id="location" name="location" class="form-control"
+                               value="{{ form.location.data or '' }}">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="district">District</label>
+                        <input type="text" id="district" name="district" class="form-control"
+                               value="{{ form.district.data or '' }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="state">State</label>
+                        <select id="state" name="state" class="form-control">
+                            {% for value, label in form.state.choices %}
+                            <option value="{{ value }}" {{ 'selected' if form.state.data == value }}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" class="form-control" required>
+                        {% for error in form.password.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm_password">Confirm Password</label>
+                        <input type="password" id="confirm_password" name="confirm_password" class="form-control" required>
+                        {% for error in form.confirm_password.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block btn-lg mt-md">Create Account</button>
+            </form>
+
+            <div class="auth-footer">
+                Already have an account? <a href="{{ url_for('auth.login') }}">Sign In</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}Admin Control Center{% endblock %}
+
+{% block content %}
+<div class="layout-dashboard">
+    {% include 'components/sidebar.html' %}
+    <main class="content-area">
+        <h1 class="page-title">🏛️ Platform Administration Control Center</h1>
+        <p class="text-muted mb-lg">System-wide performance metrics, issue overview, user roles, and platform control.</p>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">{{ total_stats.total }}</div>
+                <div class="stat-label">Total Platform Issues</div>
+            </div>
+            <div class="stat-card blue">
+                <div class="stat-value">{{ civic_stats.total }}</div>
+                <div class="stat-label">Civic Infrastructure Issues</div>
+            </div>
+            <div class="stat-card green">
+                <div class="stat-value">{{ agri_stats.total }}</div>
+                <div class="stat-label">Agricultural Crop Issues</div>
+            </div>
+            <div class="stat-card accent">
+                <div class="stat-value">{{ user_counts.total }}</div>
+                <div class="stat-label">Registered Accounts</div>
+            </div>
+        </div>
+
+        <!-- User Role Breakdown Grid -->
+        <div class="card mb-lg">
+            <div class="card-header">
+                <h3>User Breakdown by Role</h3>
+                <a href="{{ url_for('admin.users') }}" class="btn btn-sm btn-outline">Manage User Accounts</a>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(130px,1fr));gap:1rem;text-align:center;">
+                <div style="padding:12px;background:var(--color-bg);border:1px solid var(--color-border);border-radius:var(--radius-md);">
+                    <div class="font-bold text-lg" style="color:var(--color-primary);">{{ user_counts.citizens }}</div>
+                    <div class="text-xs text-muted">Citizens</div>
+                </div>
+                <div style="padding:12px;background:var(--color-bg);border:1px solid var(--color-border);border-radius:var(--radius-md);">
+                    <div class="font-bold text-lg" style="color:var(--color-emerald-dark);">{{ user_counts.farmers }}</div>
+                    <div class="text-xs text-muted">Farmers</div>
+                </div>
+                <div style="padding:12px;background:var(--color-bg);border:1px solid var(--color-border);border-radius:var(--radius-md);">
+                    <div class="font-bold text-lg" style="color:var(--color-accent-blue);">{{ user_counts.experts }}</div>
+                    <div class="text-xs text-muted">Experts</div>
+                </div>
+                <div style="padding:12px;background:var(--color-bg);border:1px solid var(--color-border);border-radius:var(--radius-md);">
+                    <div class="font-bold text-lg" style="color:var(--color-accent-purple);">{{ user_counts.ngos }}</div>
+                    <div class="text-xs text-muted">NGOs</div>
+                </div>
+                <div style="padding:12px;background:var(--color-bg);border:1px solid var(--color-border);border-radius:var(--radius-md);">
+                    <div class="font-bold text-lg" style="color:var(--color-saffron-dark);">{{ user_counts.volunteers }}</div>
+                    <div class="text-xs text-muted">Volunteers</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <!-- Recent System Issues -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>Recent System Issues</h3>
+                    <a href="{{ url_for('admin.civic_issues') }}" class="btn btn-sm btn-outline">View All Civic</a>
+                </div>
+                {% for issue in recent_issues[:5] %}
+                <div class="issue-card priority-{{ issue.priority|lower }}">
+                    <div class="issue-header">
+                        <div>
+                            <span class="issue-id">{{ issue.issue_id }}</span>
+                            <div class="issue-title"><a href="{{ url_for('admin.civic_issues') }}">{{ issue.title }}</a></div>
+                        </div>
+                        <span class="status-badge {{ get_status_class(issue.status) }}">{{ issue.status }}</span>
+                    </div>
+                    <div class="issue-meta">
+                        <span>Type: {{ issue.issue_type|title }}</span>
+                        <span>Reporter: {{ issue.reporter.full_name }}</span>
+                        <span>🕐 {{ time_ago(issue.created_at) }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Recent User Signups -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>Recent User Signups</h3>
+                    <a href="{{ url_for('admin.users') }}" class="btn btn-sm btn-outline">Manage Users</a>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr><th>Name</th><th>Role</th><th>Joined</th></tr>
+                        </thead>
+                        <tbody>
+                        {% for u in recent_users %}
+                        <tr>
+                            <td><strong>{{ u.full_name }}</strong><br><span class="text-xs text-muted">{{ u.email }}</span></td>
+                            <td><span class="status-badge status-default">{{ u.role_name|title }}</span></td>
+                            <td>{{ time_ago(u.created_at) }}</td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

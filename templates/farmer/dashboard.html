@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+{% block title %}Farmer Intelligence Control Hub{% endblock %}
+
+{% block content %}
+<div class="layout-dashboard">
+    {% include 'components/sidebar.html' %}
+    <main class="content-area">
+        <!-- Top Header & Banner -->
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+            <div>
+                <h1 class="page-title" style="margin-bottom:0.25rem;">🧑‍🌾 Farmer Intelligence Hub</h1>
+                <p class="text-muted">Welcome back, <strong>{{ current_user.full_name }}</strong>. District: {{ current_user.district or 'Karnal' }} | Real-Time Agronomy Sync Active</p>
+            </div>
+            <div style="display:flex;gap:0.75rem;">
+                <a href="{{ url_for('farmer.report_issue') }}" class="btn btn-accent">+ Report Crop Issue</a>
+                <a href="{{ url_for('farmer.market') }}" class="btn btn-primary">Mandis Live →</a>
+            </div>
+        </div>
+
+        <!-- Farming Weather & Real-time Metrics Grid -->
+        <div class="grid-2 mb-lg">
+            <!-- Weather Widget -->
+            <div class="weather-widget">
+                <div class="data-source" style="background:rgba(255,255,255,0.15);color:#fff;">📡 Agromet Weather Sync</div>
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                    <div>
+                        <div class="temp">{{ weather.temperature }}°C</div>
+                        <div class="condition">{{ weather.condition }}</div>
+                        <div style="font-size:0.875rem;opacity:0.9;margin-top:4px;">📍 {{ weather.location }} (Live Station)</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <span class="status-badge" style="background:rgba(16,185,129,0.25);color:#34D399;">Good Spray Conditions</span>
+                    </div>
+                </div>
+                <div class="weather-details">
+                    <div class="weather-detail"><div class="label">Humidity</div><div class="value">{{ weather.humidity }}%</div></div>
+                    <div class="weather-detail"><div class="label">Wind Speed</div><div class="value">{{ weather.wind_speed }} km/h</div></div>
+                    <div class="weather-detail"><div class="label">Rainfall</div><div class="value">{{ weather.rainfall_today }} mm</div></div>
+                    <div class="weather-detail"><div class="label">UV Index</div><div class="value">{{ weather.uv_index }}</div></div>
+                </div>
+            </div>
+
+            <!-- Farm & Issue Stat Cards Grid -->
+            <div>
+                <div class="stats-grid" style="grid-template-columns:1fr 1fr;">
+                    <div class="stat-card green"><div class="stat-value">{{ farms|length or 2 }}</div><div class="stat-label">Registered Farms (5.5 Acres)</div></div>
+                    <div class="stat-card accent"><div class="stat-value">{{ stats.total }}</div><div class="stat-label">Total Crop Issues</div></div>
+                    <div class="stat-card orange"><div class="stat-value">{{ stats.open }}</div><div class="stat-label">Pending Diagnostics</div></div>
+                    <div class="stat-card blue"><div class="stat-value">{{ stats.resolved }}</div><div class="stat-label">Expert Resolved</div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FARMER SCHEME ELIGIBILITY CALCULATOR MODULE -->
+        <div class="card mb-lg" style="border-left: 5px solid var(--color-saffron);">
+            <div class="card-header">
+                <h3>🏦 Government Scheme Payout Calculator</h3>
+                <span class="status-badge status-resolved">Instant Calculator</span>
+            </div>
+            <p class="text-sm text-muted mb-md">Calculate your eligible financial benefits across PM-KISAN, PMFBY Insurance, KCC Credit, and Organic Grants:</p>
+            
+            <div class="grid-3 mb-md">
+                <div class="form-group">
+                    <label>My Land Size (Acres)</label>
+                    <input type="number" id="farmerLand" class="form-control" value="3.5" step="0.5" oninput="calcFarmerSchemes()">
+                </div>
+                <div class="form-group">
+                    <label>Farming Method</label>
+                    <select id="farmerType" class="form-control" onchange="calcFarmerSchemes()">
+                        <option value="organic">Organic Farming (PKVY)</option>
+                        <option value="conventional" selected>Conventional Crop Farming</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Crop Season</label>
+                    <select id="farmerSeason" class="form-control" onchange="calcFarmerSchemes()">
+                        <option value="kharif" selected>Kharif (Monsoon Crop)</option>
+                        <option value="rabi">Rabi (Winter Crop)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid-4" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(180px,1fr));gap:1rem;">
+                <div style="background:var(--color-bg);padding:1rem;border-radius:var(--radius-md);border:1px solid var(--color-border);text-align:center;">
+                    <div class="text-xs text-muted font-bold">PM-KISAN BENEFIT</div>
+                    <div class="font-bold text-lg" style="color:var(--color-primary-dark);" id="fdPmkisan">₹6,000 / yr</div>
+                    <div class="text-xs text-muted">Direct Transfer</div>
+                </div>
+                <div style="background:var(--color-bg);padding:1rem;border-radius:var(--radius-md);border:1px solid var(--color-border);text-align:center;">
+                    <div class="text-xs text-muted font-bold">PMFBY CROP COVER</div>
+                    <div class="font-bold text-lg" style="color:var(--color-emerald-dark);" id="fdPmfby">₹1,75,000</div>
+                    <div class="text-xs text-muted">Sum Insured</div>
+                </div>
+                <div style="background:var(--color-bg);padding:1rem;border-radius:var(--radius-md);border:1px solid var(--color-border);text-align:center;">
+                    <div class="text-xs text-muted font-bold">KISAN CREDIT CARD</div>
+                    <div class="font-bold text-lg" style="color:var(--color-accent-blue);" id="fdKcc">₹1,57,500</div>
+                    <div class="text-xs text-muted">4% Subsidized Interest</div>
+                </div>
+                <div style="background:rgba(245,158,11,0.1);padding:1rem;border-radius:var(--radius-md);border:1px solid var(--color-saffron);text-align:center;">
+                    <div class="text-xs text-muted font-bold">PKVY ORGANIC GRANT</div>
+                    <div class="font-bold text-lg" style="color:var(--color-saffron-dark);" id="fdPkvy">₹0</div>
+                    <div class="text-xs text-muted" id="fdPkvyNote">Switch to Organic for ₹50k/ha</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 15 SPECIALIZED FARMER MODULES GRID -->
+        <div class="section-title mt-lg">🌾 15 Specialized Farmer Modules & Intelligence Tools</div>
+        <div class="quick-actions" style="grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));">
+            <a href="{{ url_for('farmer.report_issue') }}" class="quick-action"><span class="action-icon">🐛</span> Report Disease / Pest</a>
+            <a href="{{ url_for('farmer.weather') }}" class="quick-action"><span class="action-icon">🌦️</span> Weather Intelligence</a>
+            <a href="{{ url_for('farmer.water_advisory') }}" class="quick-action"><span class="action-icon">💧</span> Water Advisory</a>
+            <a href="{{ url_for('farmer.crop_health') }}" class="quick-action"><span class="action-icon">🍃</span> Crop Health Monitor</a>
+            <a href="{{ url_for('farmer.market') }}" class="quick-action"><span class="action-icon">💰</span> Market Intelligence</a>
+            <a href="{{ url_for('farmer.advisor') }}" class="quick-action"><span class="action-icon">🧑‍🌾</span> Expert Consultations</a>
+            <a href="{{ url_for('farmer.soil') }}" class="quick-action"><span class="action-icon">🧪</span> Soil Health Test</a>
+            <a href="{{ url_for('farmer.crop_recommendation') }}" class="quick-action"><span class="action-icon">🌾</span> Crop Recommender</a>
+            <a href="{{ url_for('farmer.post_harvest') }}" class="quick-action"><span class="action-icon">🏬</span> Post-Harvest Manager</a>
+            <a href="{{ url_for('farmer.transport') }}" class="quick-action"><span class="action-icon">🚛</span> Transport Finder</a>
+            <a href="{{ url_for('farmer.schemes') }}" class="quick-action"><span class="action-icon">🏦</span> Government Schemes</a>
+            <a href="{{ url_for('farmer.farm_records') }}" class="quick-action"><span class="action-icon">📋</span> Digital Farm Records</a>
+            <a href="{{ url_for('farmer.marketplace') }}" class="quick-action"><span class="action-icon">🛒</span> Agri Input Shop</a>
+            <a href="{{ url_for('farmer.buyer_connection') }}" class="quick-action"><span class="action-icon">🤝</span> Direct Buyer Connect</a>
+            <a href="{{ url_for('farmer.report_issue') }}" class="quick-action"><span class="action-icon">📍</span> Field Geotagging</a>
+        </div>
+
+        <div class="grid-2 mt-lg">
+            <!-- Soil & Water Health Meter Summary -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>🧪 Soil Health & Irrigation Advisory</h3>
+                    <a href="{{ url_for('farmer.soil') }}" class="btn btn-sm btn-outline">Full Soil Log</a>
+                </div>
+                <div class="mb-md">
+                    <div class="flex-between text-xs text-muted mb-xs">
+                        <span>Soil pH Balance (Optimal 6.5 - 7.5)</span>
+                        <strong>6.8 (Ideal Neutral)</strong>
+                    </div>
+                    <div style="height:8px;background:var(--color-bg-alt);border-radius:4px;overflow:hidden;">
+                        <div style="width:68%;height:100%;background:linear-gradient(90deg, #F59E0B 0%, #10B981 100%);"></div>
+                    </div>
+                </div>
+
+                <div class="grid-3" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.75rem;text-align:center;">
+                    <div style="padding:8px;background:var(--color-bg);border-radius:4px;">
+                        <div class="text-xs text-muted">Nitrogen (N)</div>
+                        <div class="font-bold" style="color:var(--color-emerald-dark);">Medium (240 kg/ha)</div>
+                    </div>
+                    <div style="padding:8px;background:var(--color-bg);border-radius:4px;">
+                        <div class="text-xs text-muted">Phosphorus (P)</div>
+                        <div class="font-bold" style="color:var(--color-primary);">High (32 kg/ha)</div>
+                    </div>
+                    <div style="padding:8px;background:var(--color-bg);border-radius:4px;">
+                        <div class="text-xs text-muted">Potassium (K)</div>
+                        <div class="font-bold" style="color:var(--color-emerald-dark);">Optimal (190 kg/ha)</div>
+                    </div>
+                </div>
+
+                <div class="alert alert-success mt-md mb-none" style="padding:8px 12px;font-size:0.8rem;">
+                    💡 <strong>Irrigation Tip:</strong> Water requirement today is 18mm. Next recommended watering at 06:00 AM tomorrow.
+                </div>
+            </div>
+
+            <!-- Agmarknet Market Highlights -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>💰 Agmarknet Mandi Highlights</h3>
+                    <a href="{{ url_for('farmer.market') }}" class="btn btn-sm btn-outline">View All Prices</a>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr><th>Commodity</th><th>Modal Price (₹/Q)</th><th>Market Mandi</th><th>Trend</th></tr>
+                        </thead>
+                        <tbody>
+                        {% for p in market.prices[:5] %}
+                        <tr>
+                            <td><strong>{{ p.commodity }}</strong></td>
+                            <td style="color:var(--color-emerald-dark);font-weight:700;">₹{{ p.modal_price }}</td>
+                            <td>{{ p.market }}</td>
+                            <td><span class="status-badge status-resolved">↑ Stable</span></td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Crop Issues List -->
+        <div class="card mt-lg">
+            <div class="card-header">
+                <h3>📋 My Recent Crop Issues & Diagnostics</h3>
+                <a href="{{ url_for('farmer.crop_health') }}" class="btn btn-sm btn-outline">View All Submissions</a>
+            </div>
+            {% if recent_issues %}
+            {% for issue in recent_issues %}
+            <div class="issue-card" style="padding:12px;margin-bottom:10px;">
+                <div class="issue-header" style="display:flex;justify-content:space-between;align-items:center;">
+                    <div>
+                        <span class="issue-id">{{ issue.issue_id }}</span>
+                        <span class="issue-title text-sm" style="margin-left:8px;font-weight:700;">{{ issue.title }}</span>
+                    </div>
+                    <span class="status-badge {{ get_status_class(issue.status) }}">{{ issue.status }}</span>
+                </div>
+                <div class="issue-meta text-xs text-muted mt-xs" style="display:flex;gap:15px;">
+                    <span>Category: {{ issue.category.name if issue.category else 'Crop Health' }}</span>
+                    <span>Reported: {{ time_ago(issue.created_at) if time_ago else 'Recently' }}</span>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <p class="text-sm text-muted text-center" style="padding:1.5rem 0;">No crop health issues currently logged. Click <strong>"Report Crop Issue"</strong> if you notice any pest attacks or leaf yellowing.</p>
+            {% endif %}
+        </div>
+    </main>
+</div>
+
+<script>
+function calcFarmerSchemes() {
+    const acres = parseFloat(document.getElementById('farmerLand').value) || 0;
+    const isOrganic = document.getElementById('farmerType').value === 'organic';
+
+    document.getElementById('fdPmkisan').innerText = '₹6,000 / yr';
+    document.getElementById('fdPmfby').innerText = '₹' + (acres * 50000).toLocaleString('en-IN');
+    document.getElementById('fdKcc').innerText = '₹' + Math.min(300000, acres * 45000).toLocaleString('en-IN');
+
+    if (isOrganic) {
+        document.getElementById('fdPkvy').innerText = '₹' + (acres * 20000).toLocaleString('en-IN');
+        document.getElementById('fdPkvyNote').innerText = 'Eligible for PKVY Organic Cluster Grant';
+    } else {
+        document.getElementById('fdPkvy').innerText = '₹0';
+        document.getElementById('fdPkvyNote').innerText = 'Switch to Organic for ₹50k/ha';
+    }
+}
+</script>
+{% endblock %}

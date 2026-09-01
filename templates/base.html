@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NAGARAM — A unified flagship platform connecting citizens, farmers, experts, NGOs, volunteers and authorities for civic and agricultural issue resolution.">
+    <title>{% block title %}NAGARAM{% endblock %} — Civic & Agricultural Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@700;800;900&family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Offline indicator -->
+    <div id="offline-bar" class="offline-bar">⚠ You are currently offline. Local features remain available.</div>
+
+    {% block navbar %}
+    {% if current_user.is_authenticated %}
+    <!-- Official Top Header Bar -->
+    <div class="gov-topbar">
+        <div class="gov-flag-strip">
+            <div class="gov-badge"></div>
+            <span>NAGARAM — Unified Civic & Agricultural Platform</span>
+        </div>
+        <div>
+            <span>Official Portal</span>
+        </div>
+    </div>
+
+    <!-- Main Navigation Header -->
+    <nav class="navbar" role="navigation" aria-label="Main navigation">
+        <div style="display:flex;align-items:center;gap:1.25rem;">
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">☰</button>
+            <a href="/" class="navbar-brand">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="NAGARAM Logo" class="brand-logo">
+                <span class="brand-badge">NAGARAM</span>
+            </a>
+        </div>
+
+        <div class="navbar-user" style="display:flex;align-items:center;gap:1rem;">
+            <!-- Multilingual Language Switcher -->
+            <select class="lang-selector" id="languageSelector" onchange="changeLanguage(this.value)" aria-label="Select Language">
+                <option value="en" selected>🌐 EN (English)</option>
+                <option value="ta">🇮🇳 தமிழ் (Tamil)</option>
+                <option value="hi">🇮🇳 हिंदी (Hindi)</option>
+            </select>
+
+            {% set notif_url = url_for(current_user.role_name + '.notifications') if current_user.role_name in ['citizen', 'farmer'] else '#' %}
+            <a href="{{ notif_url }}" class="notification-badge" title="Notifications" aria-label="Notifications">
+                🔔
+                {% if unread_notifications > 0 %}
+                <span class="count">{{ unread_notifications }}</span>
+                {% endif %}
+            </a>
+
+            <div class="user-info" style="text-align:right;line-height:1.2;">
+                <div class="user-name" style="font-weight:700;color:#F0FDF4;font-size:0.9rem;">{{ current_user.full_name }}</div>
+                <div class="user-role" style="font-size:0.7rem;font-weight:800;color:var(--color-saffron-light);text-transform:uppercase;letter-spacing:0.8px;background:rgba(245,158,11,0.2);padding:1px 6px;border-radius:4px;display:inline-block;margin-top:2px;">{{ current_user.role_name }}</div>
+            </div>
+
+            <!-- Logout Button with High Contrast & Perfect Alignment -->
+            <a href="{{ url_for('auth.logout') }}" class="btn-logout" aria-label="Logout">
+                <span>Logout</span>
+                <span style="font-size:1.05rem;">🚪</span>
+            </a>
+        </div>
+    </nav>
+    {% endif %}
+    {% endblock %}
+
+    <!-- Flash Notifications -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-messages" style="max-width: var(--max-width); margin: 1rem auto 0; padding: 0 1.5rem;">
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}" role="alert">
+            <span>{{ '✅' if category == 'success' else '⚠️' if category == 'warning' else 'ℹ️' }} {{ message }}</span>
+            <button class="alert-close" onclick="this.parentElement.remove()" aria-label="Close">&times;</button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+
+    {% block footer %}{% endblock %}
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

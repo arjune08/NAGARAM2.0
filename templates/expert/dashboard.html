@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}Expert Dashboard{% endblock %}
+
+{% block content %}
+<div class="layout-dashboard">
+    {% include 'components/sidebar.html' %}
+    <main class="content-area">
+        <h1 class="page-title">🔬 Expert Pathology & Diagnostic Control</h1>
+        <p class="text-muted mb-lg">Welcome back, <strong>Dr. {{ current_user.full_name }}</strong>. Review, diagnose, and resolve agricultural crop issues.</p>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">{{ stats.total }}</div>
+                <div class="stat-label">Total Agricultural Issues</div>
+            </div>
+            <div class="stat-card blue">
+                <div class="stat-value">{{ stats.submitted }}</div>
+                <div class="stat-label">New Submissions</div>
+            </div>
+            <div class="stat-card orange">
+                <div class="stat-value">{{ assigned|length }}</div>
+                <div class="stat-label">Assigned to You</div>
+            </div>
+            <div class="stat-card green">
+                <div class="stat-value">{{ stats.resolved }}</div>
+                <div class="stat-label">Diagnosed & Resolved</div>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <!-- Assigned Issues -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>Assigned Issues Needing Diagnosis</h3>
+                    <a href="{{ url_for('expert.assigned_issues') }}" class="btn btn-sm btn-outline">View All</a>
+                </div>
+                {% for issue in assigned[:5] %}
+                <div class="issue-card priority-{{ issue.priority|lower }}">
+                    <div class="issue-header">
+                        <div>
+                            <span class="issue-id">{{ issue.issue_id }}</span>
+                            <div class="issue-title"><a href="{{ url_for('expert.issue_detail', issue_id=issue.id) }}">{{ issue.title }}</a></div>
+                        </div>
+                        <span class="status-badge {{ get_status_class(issue.status) }}">{{ issue.status }}</span>
+                    </div>
+                    <div class="issue-meta">
+                        <span>🌱 Crop: {{ issue.crop_name or 'N/A' }}</span>
+                        <span>📍 Location: {{ issue.location or 'N/A' }}</span>
+                        <span>🕐 {{ time_ago(issue.created_at) }}</span>
+                    </div>
+                </div>
+                {% else %}
+                <p class="text-sm text-muted text-center" style="padding:1.5rem 0;">No assigned crop issues pending.</p>
+                {% endfor %}
+            </div>
+
+            <!-- New Unassigned Issues -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>New Submissions (Unassigned)</h3>
+                    <a href="{{ url_for('expert.new_issues') }}" class="btn btn-sm btn-outline">View All</a>
+                </div>
+                {% for issue in new_issues[:5] %}
+                <div class="issue-card priority-{{ issue.priority|lower }}">
+                    <div class="issue-header">
+                        <div>
+                            <span class="issue-id">{{ issue.issue_id }}</span>
+                            <div class="issue-title"><a href="{{ url_for('expert.issue_detail', issue_id=issue.id) }}">{{ issue.title }}</a></div>
+                        </div>
+                        <span class="priority-badge {{ get_priority_class(issue.priority) }}">{{ issue.priority }}</span>
+                    </div>
+                    <div class="issue-meta">
+                        <span>🌱 Crop: {{ issue.crop_name or 'N/A' }}</span>
+                        <span>📍 District: {{ issue.district or 'N/A' }}</span>
+                    </div>
+                </div>
+                {% else %}
+                <p class="text-sm text-muted text-center" style="padding:1.5rem 0;">No new unassigned crop issues.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% if consultations %}
+        <div class="card mt-md">
+            <div class="card-header">
+                <h3>Pending Farmer Consultations</h3>
+                <a href="{{ url_for('expert.consultations') }}" class="btn btn-sm btn-outline">View All Consultations</a>
+            </div>
+            {% for c in consultations[:5] %}
+            <div style="padding:0.75rem 0;border-bottom:1px solid var(--color-border);">
+                <div class="flex-between" style="display:flex;justify-content:space-between;align-items:center;">
+                    <strong class="text-sm">{{ c.subject }}</strong>
+                    <span class="status-badge {{ 'status-submitted' if c.status == 'Pending' else 'status-resolved' }}">{{ c.status }}</span>
+                </div>
+                <span class="text-xs text-muted" style="margin-top:4px;display:block;">{{ c.consultation_id }} · Category: {{ c.category }} · {{ time_ago(c.created_at) }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </main>
+</div>
+{% endblock %}

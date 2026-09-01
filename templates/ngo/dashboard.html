@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}NGO Dashboard{% endblock %}
+
+{% block content %}
+<div class="layout-dashboard">
+    {% include 'components/sidebar.html' %}
+    <main class="content-area">
+        <h1 class="page-title">🏢 NGO Community Action Hub</h1>
+        <p class="text-muted mb-lg">Welcome, <strong>{{ current_user.full_name }}</strong>. Discover unassisted community problems and coordinate field action.</p>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">{{ stats.total }}</div>
+                <div class="stat-label">Total Civic Issues</div>
+            </div>
+            <div class="stat-card blue">
+                <div class="stat-value">{{ stats.submitted }}</div>
+                <div class="stat-label">New Submissions</div>
+            </div>
+            <div class="stat-card orange">
+                <div class="stat-value">{{ assigned|length }}</div>
+                <div class="stat-label">Assigned to Organization</div>
+            </div>
+            <div class="stat-card green">
+                <div class="stat-value">{{ stats.resolved }}</div>
+                <div class="stat-label">Action Completed</div>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <!-- Assigned Issues -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>Assigned Community Tasks</h3>
+                    <a href="{{ url_for('ngo.assigned_issues') }}" class="btn btn-sm btn-outline">View All</a>
+                </div>
+                {% for i in assigned[:5] %}
+                <div class="issue-card priority-{{ i.priority|lower }}">
+                    <div class="issue-header">
+                        <div>
+                            <span class="issue-id">{{ i.issue_id }}</span>
+                            <div class="issue-title"><a href="{{ url_for('ngo.issue_detail', issue_id=i.id) }}">{{ i.title }}</a></div>
+                        </div>
+                        <span class="status-badge {{ get_status_class(i.status) }}">{{ i.status }}</span>
+                    </div>
+                </div>
+                {% else %}
+                <p class="text-sm text-muted text-center" style="padding:1.5rem 0;">No assigned community tasks currently.</p>
+                {% endfor %}
+            </div>
+
+            <!-- Community Issues -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>Nearby Community Issues</h3>
+                    <a href="{{ url_for('ngo.community_issues') }}" class="btn btn-sm btn-outline">View All</a>
+                </div>
+                {% for i in community_issues[:5] %}
+                <div class="issue-card priority-{{ i.priority|lower }}">
+                    <div class="issue-header">
+                        <div>
+                            <span class="issue-id">{{ i.issue_id }}</span>
+                            <div class="issue-title"><a href="{{ url_for('ngo.issue_detail', issue_id=i.id) }}">{{ i.title }}</a></div>
+                        </div>
+                        <span class="priority-badge {{ get_priority_class(i.priority) }}">{{ i.priority }}</span>
+                    </div>
+                    <div class="issue-meta">
+                        <span>📍 Location: {{ i.location or 'N/A' }}</span>
+                        <span>🕐 Reported: {{ time_ago(i.created_at) }}</span>
+                    </div>
+                </div>
+                {% else %}
+                <p class="text-sm text-muted text-center" style="padding:1.5rem 0;">No unassisted community issues reported.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

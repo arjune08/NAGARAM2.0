@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Volunteer Dashboard{% endblock %}
+
+{% block content %}
+<div class="layout-dashboard">
+    {% include 'components/sidebar.html' %}
+    <main class="content-area">
+        <h1 class="page-title">🤝 Volunteer Community Action Hub</h1>
+        <p class="text-muted mb-lg">Welcome back, <strong>{{ current_user.full_name }}</strong>. Help resolve issues in your local community and track your impact.</p>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card blue">
+                <div class="stat-value">{{ my_tasks|length }}</div>
+                <div class="stat-label">Active Tasks</div>
+            </div>
+            <div class="stat-card accent">
+                <div class="stat-value">{{ nearby|length }}</div>
+                <div class="stat-label">Nearby Issues</div>
+            </div>
+            <div class="stat-card green">
+                <div class="stat-value">{{ completed_count }}</div>
+                <div class="stat-label">Completed Tasks</div>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <!-- My Active Tasks -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>My Active Tasks</h3>
+                    <a href="{{ url_for('volunteer.my_tasks') }}" class="btn btn-sm btn-outline">View All Tasks</a>
+                </div>
+                {% for task in my_tasks[:5] %}
+                <div class="issue-card priority-{{ task.priority|lower }}">
+                    <div class="issue-header">
+                        <div>
+                            <span class="issue-id">{{ task.issue_id }}</span>
+                            <div class="issue-title"><a href="{{ url_for('volunteer.issue_detail', issue_id=task.id) }}">{{ task.title }}</a></div>
+                        </div>
+                        <span class="status-badge {{ get_status_class(task.status) }}">{{ task.status }}</span>
+                    </div>
+                    <div class="issue-meta">
+                        <span>📍 Location: {{ task.location or 'N/A' }}</span>
+                        <span>🕐 Reported: {{ time_ago(task.created_at) }}</span>
+                    </div>
+                </div>
+                {% else %}
+                <p class="text-sm text-muted text-center" style="padding:1.5rem 0;">No active tasks assigned.</p>
+                {% endfor %}
+            </div>
+
+            <!-- Nearby Issues -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>Nearby Issues Needing Help</h3>
+                    <a href="{{ url_for('volunteer.nearby_issues') }}" class="btn btn-sm btn-outline">View All Nearby</a>
+                </div>
+                {% for issue in nearby[:5] %}
+                <div class="issue-card priority-{{ issue.priority|lower }}">
+                    <div class="issue-header">
+                        <div>
+                            <span class="issue-id">{{ issue.issue_id }}</span>
+                            <div class="issue-title"><a href="{{ url_for('volunteer.issue_detail', issue_id=issue.id) }}">{{ issue.title }}</a></div>
+                        </div>
+                        <span class="priority-badge {{ get_priority_class(issue.priority) }}">{{ issue.priority }}</span>
+                    </div>
+                    <div class="issue-meta">
+                        <span>📍 Location: {{ issue.location or 'N/A' }}</span>
+                        <span>🕐 Reported: {{ time_ago(issue.created_at) }}</span>
+                    </div>
+                </div>
+                {% else %}
+                <p class="text-sm text-muted text-center" style="padding:1.5rem 0;">No nearby issues needing help right now.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

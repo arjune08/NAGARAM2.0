@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}About{% endblock %}
+{% block navbar %}
+<div class="tricolor-bar" style="height:4px;background:linear-gradient(to right,#FF9933 33%,#fff 33%,#fff 66%,#138808 66%);"></div>
+<nav class="navbar"><a href="/" class="navbar-brand"><span class="brand-accent">N</span>AGARAM</a>
+<ul class="navbar-nav"><li><a href="/">Home</a></li><li><a href="{{ url_for('auth.login') }}">Login</a></li></ul></nav>
+{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">{% endblock %}
+{% block content %}
+<div class="section" style="max-width:800px;margin:0 auto;">
+    <h1 class="page-title">About NAGARAM</h1>
+    <p>NAGARAM is a unified intelligent platform connecting citizens, farmers, experts, NGOs, volunteers and government authorities to report, track and resolve civic and agricultural issues through coordinated, data-driven action.</p>
+    <h3 class="mt-lg">Our Mission</h3>
+    <p class="mt-sm">To create a transparent, efficient bridge between the people who identify problems and the people who can solve them — eliminating delays, improving accountability, and building stronger communities.</p>
+    <h3 class="mt-lg">Technology</h3>
+    <p class="mt-sm">Built with Python/Flask, Supabase PostgreSQL, and modern web standards. Designed for accessibility, low-connectivity environments, and multi-language support.</p>
+</div>
+{% endblock %}

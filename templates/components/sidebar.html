@@ -1,0 +1,78 @@
+{# Reusable sidebar component #}
+<aside class="sidebar" id="sidebar" role="navigation" aria-label="Dashboard navigation">
+    <nav>
+        <ul class="sidebar-nav">
+            {% if current_user.role_name == 'citizen' %}
+            <li class="sidebar-section">Citizen Portal</li>
+            <li><a href="{{ url_for('citizen.dashboard') }}" class="{% if request.endpoint == 'citizen.dashboard' %}active{% endif %}"><span class="nav-icon">📊</span> Dashboard</a></li>
+            <li><a href="{{ url_for('citizen.report_issue') }}" class="{% if request.endpoint == 'citizen.report_issue' %}active{% endif %}"><span class="nav-icon">📝</span> Report Issue</a></li>
+            <li><a href="{{ url_for('citizen.my_issues') }}" class="{% if request.endpoint == 'citizen.my_issues' %}active{% endif %}"><span class="nav-icon">📋</span> My Issues</a></li>
+            <li><a href="{{ url_for('citizen.notifications') }}" class="{% if request.endpoint == 'citizen.notifications' %}active{% endif %}"><span class="nav-icon">🔔</span> Notifications</a></li>
+            <li><a href="{{ url_for('citizen.profile') }}" class="{% if request.endpoint == 'citizen.profile' %}active{% endif %}"><span class="nav-icon">👤</span> Profile</a></li>
+
+            {% elif current_user.role_name == 'farmer' %}
+            <li class="sidebar-section">Farmer Portal</li>
+            <li><a href="{{ url_for('farmer.dashboard') }}" class="{% if request.endpoint == 'farmer.dashboard' %}active{% endif %}"><span class="nav-icon">📊</span> Dashboard</a></li>
+            <li class="sidebar-section">Intelligence</li>
+            <li><a href="{{ url_for('farmer.weather') }}" class="{% if request.endpoint == 'farmer.weather' %}active{% endif %}"><span class="nav-icon">🌦️</span> Weather Intelligence</a></li>
+            <li><a href="{{ url_for('farmer.water_advisory') }}" class="{% if request.endpoint == 'farmer.water_advisory' %}active{% endif %}"><span class="nav-icon">💧</span> Water Advisory</a></li>
+            <li><a href="{{ url_for('farmer.crop_health') }}" class="{% if request.endpoint == 'farmer.crop_health' %}active{% endif %}"><span class="nav-icon">🌱</span> Crop Health Monitor</a></li>
+            <li><a href="{{ url_for('farmer.market') }}" class="{% if request.endpoint == 'farmer.market' %}active{% endif %}"><span class="nav-icon">💰</span> Market Intelligence</a></li>
+            <li class="sidebar-section">Advisory</li>
+            <li><a href="{{ url_for('farmer.advisor') }}" class="{% if request.endpoint == 'farmer.advisor' %}active{% endif %}"><span class="nav-icon">🧑‍🌾</span> Agriculture Advisor</a></li>
+            <li><a href="{{ url_for('farmer.soil') }}" class="{% if request.endpoint == 'farmer.soil' %}active{% endif %}"><span class="nav-icon">🧪</span> Soil Health</a></li>
+            <li><a href="{{ url_for('farmer.crop_recommendation') }}" class="{% if request.endpoint == 'farmer.crop_recommendation' %}active{% endif %}"><span class="nav-icon">🌾</span> Crop Recommendation</a></li>
+            <li class="sidebar-section">Management</li>
+            <li><a href="{{ url_for('farmer.post_harvest') }}" class="{% if request.endpoint == 'farmer.post_harvest' %}active{% endif %}"><span class="nav-icon">📦</span> Post-Harvest Manager</a></li>
+            <li><a href="{{ url_for('farmer.transport') }}" class="{% if request.endpoint == 'farmer.transport' %}active{% endif %}"><span class="nav-icon">🚚</span> Transport Finder</a></li>
+            <li><a href="{{ url_for('farmer.schemes') }}" class="{% if request.endpoint == 'farmer.schemes' %}active{% endif %}"><span class="nav-icon">🏦</span> Government Schemes</a></li>
+            <li><a href="{{ url_for('farmer.farm_records') }}" class="{% if request.endpoint == 'farmer.farm_records' %}active{% endif %}"><span class="nav-icon">📄</span> Farm Records</a></li>
+            <li class="sidebar-section">Marketplace</li>
+            <li><a href="{{ url_for('farmer.marketplace') }}" class="{% if request.endpoint == 'farmer.marketplace' %}active{% endif %}"><span class="nav-icon">🛒</span> Input Marketplace</a></li>
+            <li><a href="{{ url_for('farmer.buyer_connection') }}" class="{% if request.endpoint == 'farmer.buyer_connection' %}active{% endif %}"><span class="nav-icon">🤝</span> Buyer Connection</a></li>
+            <li class="sidebar-section">Issues</li>
+            <li><a href="{{ url_for('farmer.report_issue') }}" class="{% if request.endpoint == 'farmer.report_issue' %}active{% endif %}"><span class="nav-icon">📝</span> Report Issue</a></li>
+            <li><a href="{{ url_for('farmer.notifications') }}" class="{% if request.endpoint == 'farmer.notifications' %}active{% endif %}"><span class="nav-icon">🔔</span> Notifications</a></li>
+            <li><a href="{{ url_for('farmer.profile') }}" class="{% if request.endpoint == 'farmer.profile' %}active{% endif %}"><span class="nav-icon">👤</span> Profile</a></li>
+
+            {% elif current_user.role_name == 'expert' %}
+            <li class="sidebar-section">Expert Portal</li>
+            <li><a href="{{ url_for('expert.dashboard') }}" class="{% if request.endpoint == 'expert.dashboard' %}active{% endif %}"><span class="nav-icon">📊</span> Dashboard</a></li>
+            <li><a href="{{ url_for('expert.new_issues') }}" class="{% if request.endpoint == 'expert.new_issues' %}active{% endif %}"><span class="nav-icon">🆕</span> New Issues</a></li>
+            <li><a href="{{ url_for('expert.assigned_issues') }}" class="{% if request.endpoint == 'expert.assigned_issues' %}active{% endif %}"><span class="nav-icon">📋</span> Assigned Issues</a></li>
+            <li><a href="{{ url_for('expert.consultations') }}" class="{% if request.endpoint == 'expert.consultations' %}active{% endif %}"><span class="nav-icon">💬</span> Consultations</a></li>
+            <li><a href="{{ url_for('expert.resolved_issues') }}" class="{% if request.endpoint == 'expert.resolved_issues' %}active{% endif %}"><span class="nav-icon">✅</span> Resolved Issues</a></li>
+            <li><a href="{{ url_for('expert.profile') }}" class="{% if request.endpoint == 'expert.profile' %}active{% endif %}"><span class="nav-icon">👤</span> Profile</a></li>
+
+            {% elif current_user.role_name == 'ngo' %}
+            <li class="sidebar-section">NGO Portal</li>
+            <li><a href="{{ url_for('ngo.dashboard') }}" class="{% if request.endpoint == 'ngo.dashboard' %}active{% endif %}"><span class="nav-icon">📊</span> Dashboard</a></li>
+            <li><a href="{{ url_for('ngo.community_issues') }}" class="{% if request.endpoint == 'ngo.community_issues' %}active{% endif %}"><span class="nav-icon">🏘️</span> Community Issues</a></li>
+            <li><a href="{{ url_for('ngo.assigned_issues') }}" class="{% if request.endpoint == 'ngo.assigned_issues' %}active{% endif %}"><span class="nav-icon">📋</span> Assigned Issues</a></li>
+            <li><a href="{{ url_for('ngo.completed') }}" class="{% if request.endpoint == 'ngo.completed' %}active{% endif %}"><span class="nav-icon">✅</span> Completed Work</a></li>
+            <li><a href="{{ url_for('ngo.profile') }}" class="{% if request.endpoint == 'ngo.profile' %}active{% endif %}"><span class="nav-icon">👤</span> Profile</a></li>
+
+            {% elif current_user.role_name == 'volunteer' %}
+            <li class="sidebar-section">Volunteer Portal</li>
+            <li><a href="{{ url_for('volunteer.dashboard') }}" class="{% if request.endpoint == 'volunteer.dashboard' %}active{% endif %}"><span class="nav-icon">📊</span> Dashboard</a></li>
+            <li><a href="{{ url_for('volunteer.nearby_issues') }}" class="{% if request.endpoint == 'volunteer.nearby_issues' %}active{% endif %}"><span class="nav-icon">📍</span> Nearby Issues</a></li>
+            <li><a href="{{ url_for('volunteer.my_tasks') }}" class="{% if request.endpoint == 'volunteer.my_tasks' %}active{% endif %}"><span class="nav-icon">📋</span> My Tasks</a></li>
+            <li><a href="{{ url_for('volunteer.contributions') }}" class="{% if request.endpoint == 'volunteer.contributions' %}active{% endif %}"><span class="nav-icon">⭐</span> Contributions</a></li>
+            <li><a href="{{ url_for('volunteer.profile') }}" class="{% if request.endpoint == 'volunteer.profile' %}active{% endif %}"><span class="nav-icon">👤</span> Profile</a></li>
+
+            {% elif current_user.role_name == 'admin' %}
+            <li class="sidebar-section">Admin Portal</li>
+            <li><a href="{{ url_for('admin.dashboard') }}" class="{% if request.endpoint == 'admin.dashboard' %}active{% endif %}"><span class="nav-icon">📊</span> Dashboard</a></li>
+            <li><a href="{{ url_for('admin.users') }}" class="{% if request.endpoint == 'admin.users' %}active{% endif %}"><span class="nav-icon">👥</span> Users</a></li>
+            <li class="sidebar-section">Issues</li>
+            <li><a href="{{ url_for('admin.civic_issues') }}" class="{% if request.endpoint == 'admin.civic_issues' %}active{% endif %}"><span class="nav-icon">🏛️</span> Civic Issues</a></li>
+            <li><a href="{{ url_for('admin.agricultural_issues') }}" class="{% if request.endpoint == 'admin.agricultural_issues' %}active{% endif %}"><span class="nav-icon">🌾</span> Agricultural Issues</a></li>
+            <li class="sidebar-section">Management</li>
+            <li><a href="{{ url_for('admin.categories') }}" class="{% if request.endpoint == 'admin.categories' %}active{% endif %}"><span class="nav-icon">🏷️</span> Categories</a></li>
+            <li><a href="{{ url_for('admin.analytics') }}" class="{% if request.endpoint == 'admin.analytics' %}active{% endif %}"><span class="nav-icon">📈</span> Analytics</a></li>
+            <li><a href="{{ url_for('admin.settings') }}" class="{% if request.endpoint == 'admin.settings' %}active{% endif %}"><span class="nav-icon">⚙️</span> Settings</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+</aside>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>

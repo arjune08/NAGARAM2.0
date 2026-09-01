@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Citizen Dashboard{% endblock %}
+{% block content %}
+<div class="layout-dashboard">
+    {% include 'components/sidebar.html' %}
+    <main class="content-area">
+        <h1 class="page-title">Citizen Dashboard</h1>
+        <p class="text-muted mb-lg">Welcome, {{ current_user.full_name }}. Track your civic issues and report new problems.</p>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">{{ stats.total }}</div>
+                <div class="stat-label">Total Issues</div>
+            </div>
+            <div class="stat-card blue">
+                <div class="stat-value">{{ stats.open }}</div>
+                <div class="stat-label">Open Issues</div>
+            </div>
+            <div class="stat-card orange">
+                <div class="stat-value">{{ stats.in_progress }}</div>
+                <div class="stat-label">In Progress</div>
+            </div>
+            <div class="stat-card green">
+                <div class="stat-value">{{ stats.resolved }}</div>
+                <div class="stat-label">Resolved</div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="section-title">Quick Actions</div>
+        <div class="quick-actions">
+            <a href="{{ url_for('citizen.report_issue') }}" class="quick-action">
+                <span class="action-icon">📝</span> Report Issue
+            </a>
+            <a href="{{ url_for('citizen.my_issues') }}" class="quick-action">
+                <span class="action-icon">📋</span> View My Issues
+            </a>
+            <a href="{{ url_for('citizen.notifications') }}" class="quick-action">
+                <span class="action-icon">🔔</span> Notifications
+            </a>
+            <a href="{{ url_for('citizen.profile') }}" class="quick-action">
+                <span class="action-icon">👤</span> My Profile
+            </a>
+        </div>
+
+        <!-- Recent Issues -->
+        <div class="card">
+            <div class="card-header">
+                <h3>Recent Issues</h3>
+                <a href="{{ url_for('citizen.my_issues') }}" class="btn btn-sm btn-outline">View All</a>
+            </div>
+            {% if recent_issues %}
+            {% for issue in recent_issues %}
+            <div class="issue-card priority-{{ issue.priority|lower }}">
+                <div class="issue-header">
+                    <div>
+                        <span class="issue-id">{{ issue.issue_id }}</span>
+                        <div class="issue-title"><a href="{{ url_for('citizen.issue_detail', issue_id=issue.id) }}">{{ issue.title }}</a></div>
+                    </div>
+                    <span class="status-badge {{ get_status_class(issue.status) }}">{{ issue.status }}</span>
+                </div>
+                <div class="issue-meta">
+                    <span>📍 {{ issue.location or 'N/A' }}</span>
+                    <span>📂 {{ issue.category.name if issue.category else 'Uncategorized' }}</span>
+                    <span>🕐 {{ time_ago(issue.created_at) }}</span>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">📋</div>
+                <p>No issues reported yet. <a href="{{ url_for('citizen.report_issue') }}">Report your first issue</a>.</p>
+            </div>
+            {% endif %}
+        </div>
+    </main>
+</div>
+{% endblock %}

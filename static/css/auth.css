@@ -1,0 +1,150 @@
+/*
+ * NAGARAM — Premium Auth UI
+ */
+
+.auth-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(135deg, #020617 0%, #0F172A 50%, #1E3A8A 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-page::before {
+    content: '';
+    position: absolute;
+    top: -150px;
+    right: -150px;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, transparent 70%);
+    border-radius: 50%;
+    filter: blur(50px);
+}
+
+.auth-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5rem 1.5rem;
+    position: relative;
+    z-index: 10;
+}
+
+.auth-card {
+    background: var(--color-white);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+}
+
+.auth-card .auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.auth-card .auth-header .brand {
+    font-family: var(--font-family-brand);
+    font-size: 2.5rem;
+    font-weight: 900;
+    letter-spacing: 4px;
+    background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 50%, #D97706 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.25rem;
+}
+
+.auth-card .auth-header .brand span {
+    background: linear-gradient(135deg, #F59E0B 0%, #FBBF24 50%, #10B981 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.auth-card .auth-header h2 {
+    color: var(--color-primary);
+    font-size: 1.35rem;
+    margin-top: 0.25rem;
+}
+
+.auth-card .auth-header p {
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--color-border);
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+}
+
+.auth-footer a {
+    color: var(--color-gov-blue-light);
+    font-weight: 700;
+}
+
+/* Role Selection Grid */
+.role-select-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.65rem;
+    margin-bottom: 1.25rem;
+}
+
+.role-option {
+    position: relative;
+}
+
+.role-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.role-option label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 0.75rem 0.5rem;
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    text-align: center;
+    transition: all var(--transition-fast);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--color-text-secondary);
+    background: var(--color-white);
+}
+
+.role-option label:hover {
+    border-color: var(--color-border-hover);
+    background: var(--color-bg);
+}
+
+.role-option input:checked + label {
+    border-color: var(--color-gov-blue-light);
+    background: rgba(37, 99, 235, 0.06);
+    color: var(--color-gov-blue-light);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+}
+
+.role-option .role-emoji {
+    font-size: 1.35rem;
+}
+
+@media (max-width: 480px) {
+    .role-select-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}

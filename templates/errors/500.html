@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}500 — Server Error{% endblock %}
+{% block navbar %}
+<div class="tricolor-bar" style="height:4px;background:linear-gradient(to right,#FF9933 33%,#fff 33%,#fff 66%,#138808 66%);"></div>
+<nav class="navbar"><a href="/" class="navbar-brand"><span class="brand-accent">N</span>AGARAM</a></nav>
+{% endblock %}
+{% block content %}
+<div class="empty-state" style="min-height:60vh;display:flex;flex-direction:column;justify-content:center;">
+    <div class="empty-icon">⚠️</div>
+    <h2>500 — Internal Server Error</h2>
+    <p class="mt-sm">Something went wrong on our end. Our team has been notified. Please try again later.</p>
+    <p class="mt-md"><a href="/" class="btn btn-primary">Return to Home</a></p>
+</div>
+{% endblock %}
