@@ -11,13 +11,7 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 
 def _database_url_from_env(default=None):
-    """Return a usable DATABASE_URL, ignoring common placeholder values.
-
-    This prevents a copied Supabase example such as
-    ``db.YOUR_PROJECT.supabase.co`` from crashing the Vercel function during
-    application startup. A real production deployment should set DATABASE_URL
-    to the connection string for the NAGARAM Supabase project.
-    """
+    """Return a usable DATABASE_URL, ignoring common placeholder values."""
     value = (os.environ.get("DATABASE_URL") or "").strip()
     if not value:
         return default
@@ -60,11 +54,9 @@ class DevelopmentConfig(Config):
 class ProductionConfig(Config):
     """Production configuration.
 
-    A valid DATABASE_URL should point to the persistent Supabase PostgreSQL
-    database. If the environment still contains an example/placeholder URL,
-    fall back to an ephemeral SQLite database so Vercel can boot instead of
-    returning an import/startup 500. The SQLite fallback is deliberately only
-    a resilience fallback; it is not a replacement for production storage.
+    Use PostgreSQL when DATABASE_URL is supplied. Until the persistent
+    production database is added, fall back to Vercel's writable /tmp SQLite
+    database so the site can boot and its built-in demo accounts can be used.
     """
     DEBUG = False
     SQLALCHEMY_DATABASE_URI = _database_url_from_env(
