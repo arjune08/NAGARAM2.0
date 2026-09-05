@@ -1,7 +1,7 @@
 """NAGARAM 2.0 public experience and assistant API."""
 from flask import Blueprint, jsonify, render_template, request
 
-from app.extensions import db
+from app.extensions import csrf, db
 
 main_bp = Blueprint("main", __name__)
 
@@ -31,6 +31,7 @@ def about():
 
 
 @main_bp.post("/api/chat")
+@csrf.exempt
 def chat():
     """Zero-key assistant backed by live NAGARAM database context."""
     payload = request.get_json(silent=True) or {}
